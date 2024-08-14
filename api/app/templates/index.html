@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes y Servicios</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <h1>Gestión de Clientes y Servicios</h1>
+    </header>
+
+    <div class="menu">
+        <button onclick="showForm('crearCliente')">Registrar Cliente</button>
+        <button onclick="showForm('registrarServicio')">Registrar Servicio</button>
+        <button onclick="showForm('consultarCliente')">Consultar Cliente</button>
+        <button onclick="showForm('actualizarCliente')">Actualizar Cliente</button>
+        <button onclick="showForm('eliminarCliente')">Eliminar Cliente</button>
+    </div>
+
+    <div id="formContainer">
+        
+    </div>
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
