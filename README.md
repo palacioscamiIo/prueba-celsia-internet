@@ -56,7 +56,7 @@ __1.5.4 Docker Compose Backend__
 
 __1.5.5 Estructura GitHub__
 
-'''
+```
 prueba-celsia-internet/
 ├── api/
 │ ├── app/
@@ -85,7 +85,7 @@ prueba-celsia-internet/
 │ ├── registros/
 │ └── diagrama.png
 └── README.md
-'''
+```
 
 ## 2. Aplicación
 
