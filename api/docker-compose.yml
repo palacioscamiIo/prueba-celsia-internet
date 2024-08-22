@@ -1,13 +1,18 @@
-version: '3.8'
+version: '3'
 
 services:
-  web:
-    build: .
+  api:
+    build: ./api
     ports:
-      - "5001:5000"
+      - "5002:5002"
     volumes:
       - .:/app
     environment:
       - FLASK_ENV=development
-    command: ["gunicorn", "-b", "0.0.0.0:5000", "app.main:create_app()"]
+    command: ["gunicorn", "-b", "0.0.0.0:5002", "app.main:create_app()"]
+    networks:
+      - api_webnet
 
+networks:
+  api_webnet:
+    external: true

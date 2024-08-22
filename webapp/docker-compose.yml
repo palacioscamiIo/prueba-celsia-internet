@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  webapp:
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - .:/usr/share/nginx/html/templates
+      - ./static:/usr/share/nginx/html/static
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api
+    networks:
+      - api_webnet
+
+networks:
+  api_webnet:
+    external: true

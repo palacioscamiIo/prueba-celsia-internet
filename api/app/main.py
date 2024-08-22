@@ -1,9 +1,14 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template # type: ignore
+from flask_cors import CORS # type: ignore
 import sqlite3
+import logging
 import os
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)  
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
 
     db_path = os.path.join(app.instance_path, 'celsia.db')
 
@@ -37,14 +42,12 @@ def create_app():
             ''')
             conn.commit()
 
-    # Inicializar la base de datos antes de cualquier solicitud
     init_db()
 
     @app.route('/clientes', methods=['POST'])
     def create_cliente():
         data = request.get_json()
         
-        # Validar tipo de identificación permitido
         tipos_identificacion_permitidos = ['CC', 'TI', 'CE', 'RC']
         if data['tipoIdentificacion'] not in tipos_identificacion_permitidos:
             return jsonify({"message": "Tipo de identificación no permitido. Valores permitidos: CC, TI, CE, RC"}), 400
@@ -79,7 +82,6 @@ def create_app():
     def create_servicio():
         data = request.get_json()
         
-        # Validar tipo de servicio permitido
         tipos_servicio_permitidos = [
             'Internet 200 MB', 'Internet 400 MB', 'Internet 600 MB', 
             'Directv Go', 'Paramount+', 'Win+'
@@ -147,37 +149,36 @@ def create_app():
                     for s in servicios
                 ]
             }
-
+            logger.info("Endpoint /clientes fue llamado")
             return jsonify(cliente_data), 200
 
-    @app.route('/servicios/<identificacion>/<servicio>', methods=['PUT'])
-    def update_servicio(identificacion, servicio):
+    @app.route('/clientes/<identificacion>', methods=['PUT'])
+    def update_cliente(identificacion):
         data = request.get_json()
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                UPDATE servicios
-                SET fecha_inicio = ?, ultima_facturacion = ?, ultimo_pago = ?
-                WHERE identificacion = ? AND servicio = ?
+                UPDATE clientes
+                SET nombres = ?, apellidos = ?, correo_electronico = ?
+                WHERE identificacion = ?
             ''', (
-                data['fechaInicio'],
-                data['ultimaFacturacion'],
-                data['ultimoPago'],
-                identificacion,
-                servicio
+                data['nombres'],
+                data['apellidos'],
+                data['correoElectronico'],
+                identificacion
             ))
             conn.commit()
-        return jsonify({"message": "Servicio actualizado con éxito"}), 200
+        return jsonify({"message": "Cliente actualizado con éxito"}), 200
 
-    @app.route('/servicios/<identificacion>/<servicio>', methods=['DELETE'])
-    def delete_servicio(identificacion, servicio):
+    @app.route('/clientes/<identificacion>', methods=['DELETE'])
+    def delete_cliente(identificacion):
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                DELETE FROM servicios WHERE identificacion = ? AND servicio = ?
-            ''', (identificacion, servicio))
+                DELETE FROM clientes WHERE identificacion = ?
+            ''', (identificacion,))
             conn.commit()
-        return jsonify({"message": "Servicio eliminado con éxito"}), 200
+        return jsonify({"message": "Cliente eliminado con éxito"}), 200
 
     @app.route('/')
     def home():
@@ -187,4 +188,4 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5002, debug=True)
